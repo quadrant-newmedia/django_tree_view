@@ -1,4 +1,4 @@
-# APP_NAME
+# django_tree_view
 
 This is a "seed" project for creating a reusable django app.
 It aids with packaging the project for pypi, pushing to GitHub, and automating tests using tox.
@@ -9,8 +9,8 @@ For the python documentation on packagin, see https://packaging.python.org/tutor
 
 ## How To Use:
 - clone this repo, then delete the origin remote
-- do a search and replace on this project, replacing APP_NAME with the actual name of your app
-- rename the APP_NAME directory
+- do a search and replace on this project, replacing django_tree_view with the actual name of your app
+- rename the django_tree_view directory
 - create venv
 - run: pip install -r requirements.txt
 - run: tox (verify that the tests are working)
