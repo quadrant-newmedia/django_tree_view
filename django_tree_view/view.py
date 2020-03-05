@@ -58,16 +58,16 @@ def view(request, *handlers):
             branch_data.update(r)
 
     # Run the view
-    return handler_fun(request, **branch_data)
+    return handler_func(request, **branch_data)
 
     # TODO:
     # Should we allow modules to implement a postprocess(response, request), which runs in reverse order? This could be used, for example, to set response headers for an entire branch
 
 def _relative_template_name(handler_list, template_path='template.html'):
-    root = handler_list[0].__name__
-    final = handler_list[-1].__name__
+    root = handler_list[0][0].__name__
+    final = handler_list[-1][0].__name__
     diff = final[len(root)+1:]
-    return os.path.join(diff.replace('.' os.path.sep), template_path)
+    return os.path.join(diff.replace('.', os.path.sep), template_path)
 
 def _get_handler_func(handler_module, method):
     '''Get final handler function, or raise raise AttributeError'''

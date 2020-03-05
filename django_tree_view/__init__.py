@@ -11,5 +11,5 @@ def make_tree_view(root_module_name="view_tree"):
     '''
     return DynamicPath(
         PathResolver(root_module_name),
-        tree_view,
+        view,
     )

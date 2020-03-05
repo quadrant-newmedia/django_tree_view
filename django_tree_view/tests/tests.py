@@ -1,10 +1,13 @@
+import os
 from django.test import TestCase, override_settings
 
+from django.urls import resolve, reverse
+from django.urls.exceptions import Resolver404
+
+from django_tree_view import make_tree_view
 from django_tree_view.module_tree import ModuleTree, ConfigurationError
 from django_tree_view.path_resolver import PathResolver
 
-# Sample - you can override any settings you require for your tests
-# @override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
 class ModuleTreeTestCase(TestCase):
     def test_missing_init_message(self):
         self.assertRaisesMessage(
@@ -21,36 +24,100 @@ class ModuleTreeTestCase(TestCase):
         self.assertEqual(0, len(d.submodules))
 
 @override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
+class PathResolverTestCase(TestCase):
+    def test_does_not_resolve(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/does_not_exist')
+
+    def test_resolves(self):
+        try :
+            resolve('/foo/')
+        except Resolver404 :
+            self.fail('valid tree view path did not resolve')
+
+    def test_deep_does_not_resolve(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/foo/does_not_exist/')
+
+    def test_missing_trailing_slash_does_not_resolve(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/foo')
+
+    def test_int_is_captured(self):
+        r = resolve('/books/1/')
+        handlers = r.args
+        self.assertEqual(handlers[0][1], None)
+        self.assertEqual(handlers[1][1], None)
+        self.assertEqual(handlers[2][1], 1)
+
+    def test_non_int_is_not_captured(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/books/1a/')
+
+    def test_int_captured_before_string(self):
+        r = resolve('/multi_capture/1/')
+        handlers = r.args
+        self.assertEqual(handlers[-1][1], 1)
+
+    def test_string_captured_before_path(self):
+        r = resolve('/multi_capture/banana/')
+        handlers = r.args
+        self.assertEqual(handlers[-1][1], 'banana')
+
+    def test_path_is_captured(self):
+        r = resolve('/path_capture/banana/pancake')
+        handlers = r.args
+        self.assertEqual(handlers[-1][1], 'banana/pancake')
+
+@override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
+# Add view tree to template dirs:
+@override_settings(TEMPLATES=[
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(os.path.dirname(__file__), 'view_tree')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+])
 class IntegrationTestCase(TestCase):
     def test_not_found(self):
         r = self.client.get('/bar/')
         self.assertEqual(r.status_code, 404)
 
+    def test_method_not_allowed(self):
+        r = self.client.get('/books/')
+        self.assertEqual(r.status_code, 405)
 
+    def test_options(self):
+        r = self.client.options('/books/')
+        self.assertEqual(r['allow'], 'options')
 
+    def test_options_with_multiple_methods(self):
+        r = self.client.options('/books/67/')
+        self.assertEqual(r['allow'], 'get, post, options')
 
+    def test_preprocess_functions_called_and_data_passed_along(self):
+        r = self.client.get('/books/67/')
+        self.assertEqual(r.content, b'root:1:book_id:67')
 
-    # Samples:
-    # def test_normal_path_before_dynamic_returns_correct_response(self):
-    #     r = self.client.get('/path_before/')
-    #     self.assertEqual(r.content, b'path before')
-    # def test_normal_path_after_dynamic_returns_correct_response(self):
-    #     r = self.client.get('/path_after/')
-    #     self.assertEqual(r.content, b'path after')
+    def test_post_fails_csrf(self):
+        r = self.client.post('/books/67/')
+        self.assertEqual(r.status_code, 403)
 
-    # def test_dynamic_path_returns_expected_response(self):
-    #     r = self.client.get('/bar/')
-    #     self.assertEqual(r.content, b'bar from dynamic')
+    def test_post_with_csrf_exempt_works(self):
+        r = self.client.post('/csrf_exempt/')
+        self.assertEqual(r.status_code, 200)
 
-    # def test_dynamic_path_func_receives_correct_args(self):
-    #     r = self.client.get('/baz/')
-    #     self.assertEqual(r.status_code, 200)
-
-    # def test_included_dynamic_path_func_receives_correct_args(self):
-    #     r = self.client.get('/included/baz/')
-    #     self.assertEqual(r.status_code, 200)
-
-    # def test_path_before_can_be_reversed(self):
-    #     self.assertEqual(reverse('path_before_name'), '/path_before/')
-    # def test_path_after_with_params_can_be_reversed(self):
-    #     self.assertEqual(reverse('path_after_name', kwargs=dict(value='BAZ')), '/path_after/BAZ/')
+    def test_relative_template_works(self):
+        r = self.client.get('/with_template/')
+        self.assertEqual(r.content, b'basic template')
+    def test_named_relative_template_in_subfolder_works(self):
+        r = self.client.get('/with_named_template/')
+        self.assertEqual(r.content, b'template a')

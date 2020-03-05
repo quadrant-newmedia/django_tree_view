@@ -19,5 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["Django>=2.2,<3.1"],
+    # TODO - this doesn't work -> I guess you can't use "editable" requirements in here
+    # We'll need to put these up on pypi, or create our own
+    install_requires=["Django>=2.2,<3.1", "-e git+ssh://localhost:/Users/alex/projects/pip_packages/django_dynamic_path@0eb32fee4197d2aa6565813b1885c77eedb65880#egg=django_dynamic_path", "-e git+ssh://localhost:/Users/alex/projects/pip_packages/django_referer_csrf@e94fef25db9c8c0dcbf17792563adb30f1040447#egg=django_referer_csrf"],
 )
