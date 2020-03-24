@@ -20,6 +20,11 @@ class PathResolver:
             return
 
         try :
+            '''
+                Reload the entire module tree, in case a new module has been added
+                (django's runserver won't auto-reload when adding new modules, since you don't have to update existing files to import them)
+            '''
+            self.module_tree = ModuleTree(root_module_name)
             return (self.get_handler_list(path), {})
         except self.NoMatch :
             pass

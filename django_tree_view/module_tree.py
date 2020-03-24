@@ -32,6 +32,8 @@ def _get_valid_module_directory_path(module):
         f = module.__file__
     except AttributeError :
         return
+    if f is None :
+        return
     p = Path(f)
     if p.name != '__init__.py' :
         return
