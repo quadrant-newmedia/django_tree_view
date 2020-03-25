@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+rm -r dist/*
 python setup.py sdist bdist_wheel
-python twine upload dist/*
+twine upload dist/*
 git push origin

@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="django_tree_view",
-    version="0.0.0",
+    version="0.0.1",
     author="Alex Fischer",
     author_email="alex@quadrant.net",
-    description="TODO",
+    description="Organize your code and templates in a natural directory structure",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/quadrant-newmedia/django_tree_view",

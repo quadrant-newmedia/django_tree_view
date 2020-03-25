@@ -23,8 +23,12 @@ class PathResolver:
             '''
                 Reload the entire module tree, in case a new module has been added
                 (django's runserver won't auto-reload when adding new modules, since you don't have to update existing files to import them)
+
+                Note - this does not catch:
+                    - modules that were deleted (cached, same response is returned)
+                    - directory already existed, you received 404, then you added __init__.py
             '''
-            self.module_tree = ModuleTree(root_module_name)
+            self.module_tree = ModuleTree(self.root_module_name)
             return (self.get_handler_list(path), {})
         except self.NoMatch :
             pass
