@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="django_tree_view",
-    version="0.0.1",
+    version="0.1.0",
     author="Alex Fischer",
     author_email="alex@quadrant.net",
     description="Organize your code and templates in a natural directory structure",
@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["Django>=2.2,<3.1", "django-dynamic-path>=0.0.4<1", "django_referer_csrf<1"],
+    install_requires=["Django>=2.2,<3.1", "django-dynamic-path>=0.0.4<1", "django_referer_csrf<1", "django_early_return<1"],
 )

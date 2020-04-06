@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.urls import resolve, reverse
 from django.urls.exceptions import Resolver404
 
-from django_tree_view import make_tree_view
+from django_tree_view import make_tree_view, NotATreeViewPath, is_get_allowed
 from django_tree_view.module_tree import ModuleTree, ConfigurationError
 from django_tree_view.path_resolver import PathResolver
 
@@ -121,3 +121,17 @@ class IntegrationTestCase(TestCase):
     def test_named_relative_template_in_subfolder_works(self):
         r = self.client.get('/with_named_template/')
         self.assertEqual(r.content, b'template a')
+
+@override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
+class IsGetAllowedTestCase(TestCase):
+    def test_template_view_raises_not_a_tree_view(self):
+        with self.assertRaises(NotATreeViewPath):
+            is_get_allowed('/template_view', None)
+    def test_nonexistent_url_raises_not_a_tree_view(self):
+        with self.assertRaises(NotATreeViewPath):
+            is_get_allowed('/fake', None)
+    def test_allowed_path_returns_true(self):
+        self.assertTrue(is_get_allowed('/books/', None))
+    def test_non_allowed_path_returns_false(self):
+        self.assertFalse(is_get_allowed('/books/5/raise_early_return/', None))
+    # TODO - tests with actual user?

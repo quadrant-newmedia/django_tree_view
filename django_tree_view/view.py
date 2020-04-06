@@ -8,6 +8,25 @@ import django_referer_csrf
 
 http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
 
+def preprocess(request, handlers):
+    branch_data = {}
+    for module, arg in handlers :
+        try :
+            p = getattr(module, 'preprocess')
+        except AttributeError :
+            # Modules don't have to implement preprocess()
+            continue
+
+        # Not all modules capture an arg from the url
+        args = [arg] if arg is not None else []
+
+        r = p(request, *args, **branch_data)
+        # preprocess can return a dictionary to be merged into the "branch data"
+        if r :
+            branch_data.update(r)
+
+    return branch_data
+
 '''
     Note - we mark the view as csrf_exempt, and then provide our own CSRF protection.
     This is so that users can turn CSRF protection off for particular endpoints.
@@ -41,21 +60,12 @@ def view(request, *handlers):
     request.relative_template_name = functools.partial(_relative_template_name, handlers)
 
     # Run all preprocess functions
-    branch_data = {}
-    for module, arg in handlers :
-        try :
-            p = getattr(module, 'preprocess')
-        except AttributeError :
-            # Modules don't have to implement preprocess()
-            continue
-
-        # Not all modules capture an arg from the url
-        args = [arg] if arg is not None else []
-
-        r = p(request, *args, **branch_data)
-        # preprocess can return a dictionary to be merged into the "branch data"
-        if r :
-            branch_data.update(r)
+    '''
+        Note - we expect you to perform any required authentication in your preprocess functions.
+        If authentication fails, we recommend raising a django_early_return.EarlyReturn exception.
+        That way you can use our is_get_allowed(path, user) helper method to determine if a given user is currently allowed to access a given path.
+    '''
+    branch_data = preprocess(request, handlers)
 
     # Run the view
     return handler_func(request, **branch_data)
