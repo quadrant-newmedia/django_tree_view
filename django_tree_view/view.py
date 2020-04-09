@@ -2,6 +2,7 @@ import functools
 import os
 
 from django import http
+from django_early_return import EarlyReturn
 from django.views.decorators.csrf import csrf_exempt
 
 import django_referer_csrf
@@ -72,6 +73,16 @@ def view(request, *handlers):
 
     # TODO:
     # Should we allow modules to implement a postprocess(response, request), which runs in reverse order? This could be used, for example, to set response headers for an entire branch
+
+# Add a special "is_visible_to_user" property to the view
+# This is to support django_page_visibility (which is not yet published)
+def is_visible_to_user(request, *handlers):
+    try :
+        preprocess(request, handlers)
+    except (EarlyReturn, http.Http404) :
+        return False
+    return True
+view.is_visible_to_user = is_visible_to_user
 
 def _relative_template_name(handler_list, template_path='template.html'):
     root = handler_list[0][0].__name__

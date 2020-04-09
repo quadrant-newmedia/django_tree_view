@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="django_tree_view",
-    version="0.1.0",
+    version="1.0.0",
     author="Alex Fischer",
     author_email="alex@quadrant.net",
     description="Organize your code and templates in a natural directory structure",
