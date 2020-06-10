@@ -1,1 +1,1 @@
-python -Wa manage.py test django_tree_view/tests/
+python -Wa manage.py test tests/

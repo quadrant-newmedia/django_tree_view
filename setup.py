@@ -3,16 +3,21 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open('VERSION', 'r') as fh:
+    version = fh.read()
+
 setuptools.setup(
     name="django_tree_view",
-    version="1.0.0",
+    version=version,
     author="Alex Fischer",
     author_email="alex@quadrant.net",
     description="Organize your code and templates in a natural directory structure",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/quadrant-newmedia/django_tree_view",
-    packages=['django_tree_view', 'django_tree_view.tests'],
+    packages=['django_tree_view'],
+    package_dir={'': 'src'},
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

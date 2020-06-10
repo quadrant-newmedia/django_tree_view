@@ -1,0 +1,3 @@
+graft src
+include RELEASE_NOTES.md
+include VERSION

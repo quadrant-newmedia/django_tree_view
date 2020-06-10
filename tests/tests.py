@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.urls import resolve, reverse
 from django.urls.exceptions import Resolver404
 
-from django_tree_view import make_tree_view, NotATreeViewPath, is_get_allowed
+from django_tree_view import make_tree_view
 from django_tree_view.module_tree import ModuleTree, ConfigurationError
 from django_tree_view.path_resolver import PathResolver
 
@@ -14,16 +14,16 @@ class ModuleTreeTestCase(TestCase):
             ConfigurationError,
             'The root of a module tree must be a python package containing an __init__.py file',
             ModuleTree,
-            'django_tree_view.tests.view_tree_with_no_init'
+            'tests.view_tree_with_no_init'
         )
 
     def test_module_tree_returns_correct_structur(self):
-        t = ModuleTree('django_tree_view.tests.module_tree_structure_test')
+        t = ModuleTree('tests.module_tree_structure_test')
         self.assertEqual(set(list(t.submodules.keys())), set(['a', 'a2']))
         d = t.submodules['a'].submodules['b'].submodules['c'].submodules['d']
         self.assertEqual(0, len(d.submodules))
 
-@override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
+@override_settings(ROOT_URLCONF='tests.urls')
 class PathResolverTestCase(TestCase):
     def test_does_not_resolve(self):
         with self.assertRaises(Resolver404) :
@@ -69,7 +69,7 @@ class PathResolverTestCase(TestCase):
         handlers = r.args
         self.assertEqual(handlers[-1][1], 'banana/pancake')
 
-@override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
+@override_settings(ROOT_URLCONF='tests.urls')
 # Add view tree to template dirs:
 @override_settings(TEMPLATES=[
     {
@@ -122,16 +122,4 @@ class IntegrationTestCase(TestCase):
         r = self.client.get('/with_named_template/')
         self.assertEqual(r.content, b'template a')
 
-@override_settings(ROOT_URLCONF='django_tree_view.tests.urls')
-class IsGetAllowedTestCase(TestCase):
-    def test_template_view_raises_not_a_tree_view(self):
-        with self.assertRaises(NotATreeViewPath):
-            is_get_allowed('/template_view', None)
-    def test_nonexistent_url_raises_not_a_tree_view(self):
-        with self.assertRaises(NotATreeViewPath):
-            is_get_allowed('/fake', None)
-    def test_allowed_path_returns_true(self):
-        self.assertTrue(is_get_allowed('/books/', None))
-    def test_non_allowed_path_returns_false(self):
-        self.assertFalse(is_get_allowed('/books/5/raise_early_return/', None))
-    # TODO - tests with actual user?
+# TODO - test django_page_visibility support
