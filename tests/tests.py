@@ -5,23 +5,23 @@ from django.urls import resolve, reverse
 from django.urls.exceptions import Resolver404
 
 from django_tree_view import make_tree_view
-from django_tree_view.module_tree import ModuleTree, ConfigurationError
+from django_tree_view.view_tree import ViewTree, ConfigurationError
 from django_tree_view.path_resolver import PathResolver
 
-class ModuleTreeTestCase(TestCase):
+class ViewTreeTestCase(TestCase):
     def test_missing_init_message(self):
         self.assertRaisesMessage(
             ConfigurationError,
             'The root of a module tree must be a python package containing an __init__.py file',
-            ModuleTree,
+            ViewTree,
             'tests.view_tree_with_no_init'
         )
 
     def test_module_tree_returns_correct_structur(self):
-        t = ModuleTree('tests.module_tree_structure_test')
-        self.assertEqual(set(list(t.submodules.keys())), set(['a', 'a2']))
-        d = t.submodules['a'].submodules['b'].submodules['c'].submodules['d']
-        self.assertEqual(0, len(d.submodules))
+        t = ViewTree('tests.module_tree_structure_test')
+        self.assertEqual(set(list(t.subtrees.keys())), set(['a', 'a2']))
+        d = t.subtrees['a'].subtrees['b'].subtrees['c'].subtrees['d']
+        self.assertEqual(0, len(d.subtrees))
 
 @override_settings(ROOT_URLCONF='tests.urls')
 class PathResolverTestCase(TestCase):

@@ -11,9 +11,9 @@ http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options',
 
 def preprocess(request, handlers):
     branch_data = {}
-    for module, arg in handlers :
+    for node, arg in handlers :
         try :
-            p = getattr(module, 'preprocess')
+            p = getattr(node.module, 'preprocess')
         except AttributeError :
             # Modules don't have to implement preprocess()
             continue
@@ -35,7 +35,8 @@ def preprocess(request, handlers):
 @csrf_exempt
 def view(request, *handlers):
     method = request.method.lower()
-    handler_module = handlers[-1][0]
+    handler_node = handlers[-1][0]
+    handler_module = handler_node.module
 
     # Apply CSRF protection, unless the handler module has set CSRF_EXEMPT=True 
     if not getattr(handler_module, 'CSRF_EXEMPT', False) :
@@ -53,12 +54,10 @@ def view(request, *handlers):
             return _options(request, handler_module)
         return _method_not_allowed(request, handler_module)
 
-    # Preprocessors or the view function itself may want to know the entire handler list
-    request.tree_view_handler_list = handlers
     # We recommend storing templates in same directory as the handler module.
     # You'll then want to put the root directory of your tree view in your template DIRS
-    # This function enables you to prepend the appropriate path to a template name (relative to the root of your tree view).
-    request.relative_template_name = functools.partial(_relative_template_name, handlers)
+    # This property enables you to prepend the appropriate path to a template name (relative to the root of your tree view).
+    request.view_tree_path = handler_node.view_tree_path
 
     # Run all preprocess functions
     '''
@@ -83,12 +82,6 @@ def is_visible_to_user(request, *handlers):
         return False
     return True
 view.is_visible_to_user = is_visible_to_user
-
-def _relative_template_name(handler_list, template_path='template.html'):
-    root = handler_list[0][0].__name__
-    final = handler_list[-1][0].__name__
-    diff = final[len(root)+1:]
-    return os.path.join(diff.replace('.', os.path.sep), template_path)
 
 def _get_handler_func(handler_module, method):
     '''Get final handler function, or raise raise AttributeError'''

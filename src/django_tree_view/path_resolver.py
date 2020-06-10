@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from .module_tree import ModuleTree
+from .view_tree import ViewTree
 
 class PathResolver:
     class NoMatch(Exception):
@@ -8,7 +8,7 @@ class PathResolver:
 
     def __init__(self, root_module_name):
         self.root_module_name = root_module_name
-        self.module_tree = ModuleTree(root_module_name)
+        self.view_tree = ViewTree(root_module_name)
 
     def __call__(self, path):
         try :
@@ -28,18 +28,22 @@ class PathResolver:
                     - modules that were deleted (cached, same response is returned)
                     - directory already existed, you received 404, then you added __init__.py
             '''
-            self.module_tree = ModuleTree(self.root_module_name)
+            self.view_tree = ViewTree(self.root_module_name)
             return (self.get_handler_list(path), {})
         except self.NoMatch :
             pass
 
     def get_handler_list(self, path):
         '''
+            Returns a list of (view_tree_node, captured_argument) tuples.
+
+            Will raise NoMatch if path cannot be mapped to a final view tree node (with module != None).
+
             Note: path should not have a leading '/'.
             If it does, we consider the path to start with an empty segment (which can still map to a string__ handler module).
         '''
-        previous_node = self.module_tree
-        handler_list = [(previous_node.module, None)]
+        previous_node = self.view_tree
+        handler_list = [(previous_node, None)]
 
         while path :
             '''
@@ -61,18 +65,18 @@ class PathResolver:
             else:
                 # Does the segment match a submodule name exactly?
                 try :
-                    handler_node = previous_node.submodules[segment]
+                    node = previous_node.subtrees[segment]
                 except KeyError :
                     pass
                 else :
-                    handler_list.append((handler_node.module, None))
+                    handler_list.append((node, None))
                     path = rest
-                    previous_node = handler_node
+                    previous_node = node
                     continue
 
-                # Are there any "capturing" submodules defined?
+                # Are there any "capturing" subtrees defined?
                 try :
-                    handler_node = previous_node.submodules['int__']
+                    node = previous_node.subtrees['int__']
                 except KeyError :
                     pass
                 else :
@@ -81,32 +85,35 @@ class PathResolver:
                     except ValueError :
                         pass
                     else :
-                        handler_list.append((handler_node.module, arg))
+                        handler_list.append((node, arg))
                         path = rest
-                        previous_node = handler_node
+                        previous_node = node
                         continue
 
                 try :
-                    handler_node = previous_node.submodules['string__']
+                    node = previous_node.subtrees['string__']
                 except KeyError :
                     pass
                 else :
-                    handler_list.append((handler_node.module, segment))
+                    handler_list.append((node, segment))
                     path = rest
-                    previous_node = handler_node
+                    previous_node = node
                     continue
 
             # If they have a path__ module defined, consume the entire remaining path
             try :
-                handler_node = previous_node.submodules['path__']
+                node = previous_node.subtrees['path__']
             except KeyError :
                 pass
             else :
-                handler_list.append((handler_node.module, path))
+                handler_list.append((node, path))
                 path = ''
-                previous_node = handler_node
+                previous_node = node
                 continue
 
+            raise self.NoMatch()
+
+        if not handler_list[-1][0]:
             raise self.NoMatch()
 
         return handler_list
