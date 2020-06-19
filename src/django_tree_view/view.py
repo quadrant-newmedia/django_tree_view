@@ -77,15 +77,16 @@ def view(request, *handlers):
     # TODO:
     # Should we allow modules to implement a postprocess(response, request), which runs in reverse order? This could be used, for example, to set response headers for an entire branch
 
-# Add a special "is_visible_to_user" property to the view
-# This is to support django_page_visibility (which is not yet published)
-def is_visible_to_user(request, *handlers):
-    try :
-        preprocess(request, handlers)
-    except (EarlyReturn, http.Http404) :
-        return False
-    return True
-view.is_visible_to_user = is_visible_to_user
+'''
+    Add a special "test_page_visibility" property to the view
+    This is to support django_page_visibility (which is not yet published)
+
+    This function should raise an exception if the user is not currently allowed to view the page.
+    Note that our implemenation of this requires users to all of their permission checks inside preprocess() functions.
+'''
+def test_page_visibility(request, *handlers):
+    preprocess(request, handlers)
+view.test_page_visibility = test_page_visibility
 
 def _get_handler_func(handler_module, method):
     '''Get final handler function, or raise raise AttributeError'''
