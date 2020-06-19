@@ -57,6 +57,10 @@ def view(request, *handlers):
     # We recommend storing templates in same directory as the handler module.
     # You'll then want to put the root directory of your tree view in your template DIRS
     # This property enables you to prepend the appropriate path to a template name (relative to the root of your tree view).
+    # This will either be empty string (for the root of the view tree) or end in '/'
+    request.view_tree_dir = os.path.join(handler_node.view_tree_path, '')
+
+    # Include this, directly, for backward compatibility
     request.view_tree_path = handler_node.view_tree_path
 
     # Run all preprocess functions
