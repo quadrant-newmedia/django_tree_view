@@ -86,6 +86,7 @@ def view(request, *handlers):
 '''
 def test_page_visibility(request, *handlers):
     preprocess(request, handlers)
+    return True
 view.test_page_visibility = test_page_visibility
 
 def _get_handler_func(handler_module, method):
