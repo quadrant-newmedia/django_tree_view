@@ -41,4 +41,14 @@ TODO
 
 ## TODO
 
-When DEBUG and reloading, reload empty modules
+When DEBUG and reloading, reload empty modules (not sure, but this might already be done).
+
+### "Single View Tree" approach
+Our path resolver no longer matches when the "path directory" contains no `view_tree_node.py` file. 
+
+I think we should change how view trees are "installed". The user should define one global `VIEW_TREE_ROOT`. You can "install" reusable apps in your view tree by symlinking to them from your view tree.
+
+This makes things easier to understand for the end user. They don't need understand `make_tree_view()`. You have a single directory containing your view tree. Period.
+
+The challenge: if an app is distributed on pypi, symlinking to it (in a way that can be copied between server environments), is not trivial.
+

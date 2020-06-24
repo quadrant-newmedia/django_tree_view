@@ -32,7 +32,7 @@ class ViewTreeNode:
 
         self.subtrees = {
             subdir.name: ViewTreeNode(
-                path.join(view_tree_path, subdir), 
+                path.join(view_tree_path, subdir.name), 
                 f'{package_name}.{subdir.name}', 
                 subdir,
             )

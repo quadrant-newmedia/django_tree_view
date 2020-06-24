@@ -1,3 +1,7 @@
+### 2.1.3
+
+Fixed `request.view_tree_dir` and `request.view_tree_path`: both were absolute, and are supposed to be relative to root of view tree
+
 ## 2.1.0
 
 Added `request.view_tree_dir`.
