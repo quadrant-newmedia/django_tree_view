@@ -113,7 +113,7 @@ class PathResolver:
 
             raise self.NoMatch()
 
-        if not handler_list[-1][0]:
+        if not handler_list[-1][0].module:
             raise self.NoMatch()
 
         return handler_list

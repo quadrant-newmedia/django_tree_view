@@ -16,3 +16,6 @@ def make_tree_view(root_module_name="view_tree"):
         PathResolver(root_module_name),
         view,
     )
+
+# For external use:
+from .utils import encode_path, decode_path

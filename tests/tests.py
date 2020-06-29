@@ -23,6 +23,12 @@ class ViewTreeTestCase(TestCase):
         d = t.subtrees['a'].subtrees['b'].subtrees['c'].subtrees['d']
         self.assertEqual(0, len(d.subtrees))
 
+    def test_raises_import_error(self):
+        try :
+            ViewTree('tests.view_tree_with_import_error')
+        except ImportError as e :
+            self.assertEqual(e.name, 'fake_module')
+
 @override_settings(ROOT_URLCONF='tests.urls')
 class PathResolverTestCase(TestCase):
     def test_does_not_resolve(self):
@@ -42,6 +48,13 @@ class PathResolverTestCase(TestCase):
     def test_missing_trailing_slash_does_not_resolve(self):
         with self.assertRaises(Resolver404) :
             resolve('/foo')
+
+    def test_no_terminal_view_tree_node_does_not_resolve(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/no_view_tree_node/')
+        # Now verify that a sub-url with view_tree_node.py DOES resolve:
+        resolve('/no_view_tree_node/sub_node/')
+
 
     def test_int_is_captured(self):
         r = resolve('/books/1/')

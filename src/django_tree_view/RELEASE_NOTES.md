@@ -1,3 +1,11 @@
+# 3.0.0
+
+PathResolver does not match if terminal leaf node package does not contain `view_tree_node.py` (this was intended in 2.0.0, but not implemented properly).
+
+`ViewTreeNode` no longer swallows `ImportError`s raised within view tree modules. 
+
+Added `encode_path` and `decode_path` utility functions.
+
 ### 2.1.3
 
 Fixed `request.view_tree_dir` and `request.view_tree_path`: both were absolute, and are supposed to be relative to root of view tree

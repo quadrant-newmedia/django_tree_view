@@ -25,9 +25,12 @@ class ViewTreeNode:
     def __init__(self, view_tree_path, package_name, package_path):
         self.view_tree_path = view_tree_path
 
+        import_name = package_name +'.view_tree_node'
         try :
-            self.module = import_module(package_name +'.view_tree_node')
-        except ModuleNotFoundError :
+            self.module = import_module(import_name)
+        except ModuleNotFoundError as e :
+            if e.name != import_name :
+                raise e
             self.module = None
 
         self.subtrees = {
