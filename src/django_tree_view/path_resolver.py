@@ -63,16 +63,19 @@ class PathResolver:
             except ValueError :
                 pass
             else:
-                # Does the segment match a submodule name exactly?
-                try :
-                    node = previous_node.subtrees[segment]
-                except KeyError :
-                    pass
-                else :
-                    handler_list.append((node, None))
-                    path = rest
-                    previous_node = node
-                    continue
+
+                # Does the segment match a submodule name exactly? These are "standard" or "non-capturing" nodes
+                # Note - segments ending in '__' are reserved for captuing nodes
+                if not segment.endswith('__') :
+                    try :
+                        node = previous_node.subtrees[segment]
+                    except KeyError :
+                        pass
+                    else :
+                        handler_list.append((node, None))
+                        path = rest
+                        previous_node = node
+                        continue
 
                 # Are there any "capturing" subtrees defined?
                 try :

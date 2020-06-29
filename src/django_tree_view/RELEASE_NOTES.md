@@ -1,3 +1,7 @@
+# 4.0.0
+
+Segments ending in __ are reserved for capturing nodes. This ensures that `string__` and `path__` nodes may receive 'int__', 'string__', or 'path__' as arguments.
+
 # 3.0.0
 
 PathResolver does not match if terminal leaf node package does not contain `view_tree_node.py` (this was intended in 2.0.0, but not implemented properly).
