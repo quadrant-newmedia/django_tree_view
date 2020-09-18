@@ -1,3 +1,6 @@
+from datetime import date
+from backports.datetime_fromisoformat import MonkeyPatch
+MonkeyPatch.patch_fromisoformat()
 from django.conf import settings
 
 from .view_tree import ViewTree
@@ -85,6 +88,21 @@ class PathResolver:
                 else :
                     try :
                         arg = int(segment)
+                    except ValueError :
+                        pass
+                    else :
+                        handler_list.append((node, arg))
+                        path = rest
+                        previous_node = node
+                        continue
+
+                try :
+                    node = previous_node.subtrees['date__']
+                except KeyError :
+                    pass
+                else :
+                    try :
+                        arg = date.fromisoformat(segment)
                     except ValueError :
                         pass
                     else :

@@ -1,3 +1,7 @@
+## 4.1.0
+
+Add support for date capturing via `date__` directories.
+
 # 4.0.0
 
 Segments ending in __ are reserved for capturing nodes. This ensures that `string__` and `path__` nodes may receive 'int__', 'string__', or 'path__' as arguments.

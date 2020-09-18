@@ -1,3 +1,4 @@
+from datetime import date
 import os
 from django.test import TestCase, override_settings
 
@@ -71,6 +72,16 @@ class PathResolverTestCase(TestCase):
         r = resolve('/multi_capture/1/')
         handlers = r.args
         self.assertEqual(handlers[-1][1], 1)
+
+    def test_date_is_captured(self):
+        r = resolve('/dates/2020-02-01/')
+        handlers = r.args
+        self.assertEqual(handlers[0][1], None)
+        self.assertEqual(handlers[1][1], None)
+        self.assertEqual(handlers[2][1], date(2020, 2, 1))
+    def test_non_date_does_not_resolve(self):
+        with self.assertRaises(Resolver404) :
+            resolve('/dates/2020-02-444/')
 
     def test_string_captured_before_path(self):
         r = resolve('/multi_capture/banana/')
