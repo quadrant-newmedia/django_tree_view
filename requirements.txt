@@ -3,7 +3,7 @@ asgiref==3.2.3
 certifi==2019.11.28
 chardet==3.0.4
 distlib==0.3.0
-Django==3.0.4
+Django==3.0.14
 django-dynamic-path==0.0.4
 django-early-return==0.0.0
 django-referer-csrf==0.0.0
