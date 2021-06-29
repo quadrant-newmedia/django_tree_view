@@ -24,5 +24,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["Django>=2.2,<3.1", "django-dynamic-path>=0.0.4<1", "django_referer_csrf<1", "django_early_return<1", "backports-datetime-fromisoformat>=1.0.0"],
+    install_requires=["Django>=2.2,<3.3", "django-dynamic-path>=0.0.4<1", "django_referer_csrf<1", "django_early_return<1", "backports-datetime-fromisoformat>=1.0.0"],
 )

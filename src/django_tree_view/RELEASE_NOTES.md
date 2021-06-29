@@ -1,3 +1,7 @@
+### 4.1.1
+
+Add support for Django 3.1, 3.2
+
 ## 4.1.0
 
 Add support for date capturing via `date__` directories.
