@@ -1,3 +1,6 @@
+### 4.1.2
+Minor readme changes
+
 ### 4.1.1
 
 Add support for Django 3.1, 3.2

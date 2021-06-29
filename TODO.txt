@@ -1,3 +1,2 @@
-This is waiting on the publishing of django_dynamic_path -> then I'll add as install requirement, and continue with tests
-
-Also waiting on publishing of django_referer_csrf
+Drop django_early_return requirement - we're not actually using it (except in tests)
+We can still recommend it

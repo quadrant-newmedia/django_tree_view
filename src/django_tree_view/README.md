@@ -35,6 +35,13 @@ Organize your view code and templates and in a directory structure, and automati
 
     This will allow you to place page-specific templates inside the same directory which holds the view code for that url.
 
+## CSRF Protection
+Our view uses Django's `csrf_exempt` decorator, and selectively applies its own CSRF protection.
+
+Any view tree node can opt-out of CSRF protection by setting `CSRF_EXEMPT=True` at the module level.
+
+The CSRF protection we use is not Django's default CSRF protection. We use utilities from django_referer_csrf. You may want to check out the documentation for django_referer_csrf, and use their middleware in place of Django's, but this is *not* required.
+
 ## Organizing Your View Tree
 
 TODO
