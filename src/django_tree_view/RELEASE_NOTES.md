@@ -1,3 +1,6 @@
+## 4.3.0
+Explicit Django 5 support
+
 ### 4.1.2
 Minor readme changes
 
