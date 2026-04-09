@@ -1,3 +1,6 @@
+# DEPRECATED
+We no longer recommend this approach. In practice, it caused more headaches than it solved.
+
 # Django Tree View
 
 Organize your view code and templates and in a directory structure, and automatically generate urls for them.
